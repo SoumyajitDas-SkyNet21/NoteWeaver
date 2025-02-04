@@ -1,0 +1,9 @@
+streamlit
+youtube_transcript_api
+google-generativeai
+reportlab
+tenacity
+re
+time
+logging
+json

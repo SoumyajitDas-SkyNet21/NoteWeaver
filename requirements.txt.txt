@@ -1,5 +1,0 @@
-streamlit
-youtube-transcript-api
-google-generativeai
-reportlab
-tenacity
