@@ -4,7 +4,7 @@ import re
 import google.generativeai as genai
 import time
 import logging
-from tenacity import retry, stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=2, max=10))
+from tenacity import retry, stop_after_attempt, wait_exponential
 import json
 
 # Configure logging
@@ -59,7 +59,10 @@ def chunk_text(text, chunk_size=500):
         chunks.append(" ".join(current_chunk))
     return chunks
 
-@retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=2, max=10))
+stop = stop_after_attempt(5)
+wait = wait_exponential(multiplier=1, min=2, max=10)
+
+@retry(stop=stop, wait=wait)
 def generate_notes_with_retry(prompt):
     try:
         print("Calling Gemini API with prompt: ", prompt)
@@ -152,7 +155,7 @@ def generate_overall_summary(overall_notes):
     Given all the notes taken:
     {overall_notes}
 
-    Generate an overall summary of the video. Focus on the main points and key takeaways. Don't return any headings(remove any headings from your content), just paragraph.Keep all the fonts similar and consistent. Don't return any additional information.
+    Generate an overall summary of the video. Focus on the main points and key takeaways.
     """
     try:
         response = model.generate_content(prompt)
@@ -167,8 +170,7 @@ def main():
     """
     <style>
     /* Target the markdown headings directly */
-    div[data-baseweb="block-container"] h1 {
-    font-size: 7.8em !important;}, 
+    div[data-baseweb="block-container"] h1, 
     div[data-baseweb="block-container"] h2,
     div[data-baseweb="block-container"] h3,
     div[data-baseweb="block-container"] h4,
@@ -185,10 +187,16 @@ def main():
     div[data-baseweb="block-container"] li {
         font-size: 1.8em !important;
     }
+    
 
     /* Add margin to the Clear Notes button */
     .stButton > button {
         margin-top: 3em !important; /* Adjust this value as needed */
+    }
+
+    /* Reduce spacing between input and Generate button */
+    .stTextInput, .stButton {
+        margin-bottom: -1.5em !important; /* Adjust this value as needed */
     }
     </style>
     """,
@@ -228,9 +236,11 @@ def main():
                     if overall_notes:  # Check if there are any topics before generating the summary
                         overall_summary = generate_overall_summary(overall_notes)
                         st.subheader("Summary", divider = "rainbow") #Added "Summary" as a heading
-                        st.markdown(f"""<div style="font-size: 1.5em; line-height: 1.6; word-wrap: break-word;">
+                        st.markdown(f"""
+
                                         {overall_summary}
-                                        </div>""", unsafe_allow_html=True)  # Reduced font size
+
+                                        """, unsafe_allow_html=True)
 
         # Add a reset button that clears the cache when clicked
         if st.button("Clear Notes"):
