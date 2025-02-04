@@ -59,10 +59,7 @@ def chunk_text(text, chunk_size=500):
         chunks.append(" ".join(current_chunk))
     return chunks
 
-stop = stop_after_attempt(5)
-wait = wait_exponential(multiplier=1, min=2, max=10)
-
-@retry(stop=stop, wait=wait)
+@retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=2, max=10))
 def generate_notes_with_retry(prompt):
     try:
         print("Calling Gemini API with prompt: ", prompt)
@@ -189,14 +186,8 @@ def main():
     }
     
 
-    /* Add margin to the Clear Notes button */
-    .stButton > button {
+  .stButton > button {
         margin-top: 3em !important; /* Adjust this value as needed */
-    }
-
-    /* Reduce spacing between input and Generate button */
-    .stTextInput, .stButton {
-        margin-bottom: -1.5em !important; /* Adjust this value as needed */
     }
     </style>
     """,
@@ -248,5 +239,5 @@ def main():
             st.rerun()  # Rerun the entire script
         st.markdown('</div>', unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
+    with st.sidebar:
+        st.markdown("<p style='text-align: center;'>Made by Soumyajit </p>", unsafe_allow_html=True) # Replace Your Name
