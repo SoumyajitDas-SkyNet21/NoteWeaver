@@ -2,6 +2,7 @@ import os
 import re
 import time
 import nltk
+nltk.download('punkt_tab')
 import google.generativeai as genai
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound
 from googleapiclient.discovery import build
